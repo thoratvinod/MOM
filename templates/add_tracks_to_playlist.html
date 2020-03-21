@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+<title>Selecting Songs</title>
+<style>
+    .list-group-item{
+        background-color: #194b5d;
+        border-color: #ffffff;
+    }
+    .checkbox{
+        margin-right: 2rem;
+        mix-blend-mode: color-dodge;
+        box-sizing: border-box;
+        width: 1.25em;
+        height: 1.25em;
+    }
+</style>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <center><h3 class="font-weight-normal">Add Playlist</h3></center>
+    <form action="" method="POST">
+        <ul class="list-group list-group-flush">
+            {% for track in tracks %}
+            <li class="list-group-item" style="background-color: #194b5d;border-color: #ffffff;">
+                <input type="checkbox" name="{{track.track_id}}" class="checkbox" aria-label="Checkbox for following text input">
+                {{track.name}}
+            </li>
+            {% endfor %}
+        </ul>
+        <br>
+        <center><button class="btn btn-primary">Add Songs in Playlist</button></center>
+    </form>
+    
+</div>
+<br><br>
+
+{% endblock%}

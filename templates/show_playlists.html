@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+<title>Selecting Songs</title>
+<style>
+    .table{
+        border: 1px solid #ffffff;
+    }
+    .alink{
+        color: #00e2ff;
+        margin: 0.5rem;
+    }
+</style>
+
+{% endblock %}
+
+{% block body %}
+<br><br>
+<div class="container">
+    <center><h3 class="font-weight-normal">Playlists Available in Database</h3></center>
+        <!-- <ul class="list-group list-group-flush">
+            {% for playlist in playlists %}
+            <li class="list-group-item" style="background-color: #194b5d;border-color: #ffffff;">
+                {{playlist.playlist_title}}
+            </li>
+            {% endfor %}
+        </ul> -->
+    <br><br>
+    <table class="table">
+        <tr class="table">
+            <th class="table" style="color:#ffffff;">Title</th>
+            <th class="table" style="color:#ffffff;">Date Created</th>
+            <th class="table" style="color:#ffffff;">Created by</th>
+            <th class="table" style="color:#ffffff;">Modify</th>
+        </tr>
+        {% for playlist in playlists %}
+        <tr>
+            <td class="table" style="color:#ffffff;">{{playlist.playlist_title}}</td>
+            <td class="table" style="color:#ffffff;">{{playlist.date_created}}</td>
+            <td class="table" style="color:#ffffff;">{{playlist.created_by}}</td>
+            <td class="table" style="color:#ffffff;"><a class="alink" href="/play_playlist/{{playlist.playlist_id}}">Play</a>|<a class="alink" href="/delete_playlist/{{playlist.playlist_id}}">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+</div>
+<br><br>
+
+{% endblock %}
