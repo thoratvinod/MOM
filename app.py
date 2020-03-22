@@ -10,7 +10,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from flask_migrate import Migrate
 import json
 from datetime import datetime
-# from emotion import get_emotion
+from emotion import get_emotion
 
 
 
@@ -335,9 +335,7 @@ def logout():
 
 @app.route('/predict')
 def predict():
-    # label = get_emotion()
-    # label = "Surprise"
-    
+    label = get_emotion()    
     return redirect('/musicplayer?mood='+label)
 
 if __name__== "__main__":
