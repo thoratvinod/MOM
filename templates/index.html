@@ -2,7 +2,7 @@
 
 {% block head %}
 
-<title>Hello world 3</title>
+<title>Music on Mood</title>
 {% endblock %}
 
 {% block body %}
@@ -24,7 +24,6 @@
                     {% endif %}
                     <a id="btnPrev">&vltri;</a><a id="btnNext">&vrtri;</a>
                     <a href="/predict"><i class="fas fa-camera-retro fa-sm"></i></a>
-                    <a href="javascript:void(0)" class="aaf"><i class="far fa-heart"></i></a>
               </div>
           </div>
           <div id="plwrap">
@@ -33,17 +32,22 @@
       </div>
   </div>
   <div class="column add-bottom center">
-      <p>Created By : <a href="http://www.mythium.net/">Vinod Thorat, Mayur Rathod, Rohan Shinde, And</a></p>
-      <p>Download: <a href="https://archive.org/download/mythium/mythium_vbr_mp3.zip">zip</a> / <a href="https://archive.org/download/mythium/mythium_archive.torrent">torrent</a></p>
+      <p>Created By : <a href="/aboutus">Vinod Thorat, Mayur Rathod, Rohan Shinde and Aniruddha Deshmukh</a></p>
+      <p>Download: <a target="_blank" href="https://github.com/thoratvinod/Music_On_Mood_BE_Project">GitHub</a>
   </div>
 </div>
   
-{% endblock%}
+{% endblock%}   
 {% block js %}
 <script type="text/javascript">
-    // Mythium Archive: https://archive.org/details/mythium/
-console.log({{tracks|tojson}})
+
 tempTracks = {{tracks|tojson}}
+if(tempTracks.length == 0){
+    $('#plList').append('<li style="text-align:center;"> \
+        🎶🎻Please add songs to hear for this mood🎻🎶\
+    </li>');
+}
+
 // console.log( tempTracks.sort( () => Math.random() - 0.5) );
 jQuery(function ($) {
   'use strict'
@@ -68,8 +72,9 @@ jQuery(function ($) {
           mediaPath = 'https://raw.githubusercontent.com/muhammederdem/mini-player/master/mp3/',
           extension = '',
           tracks = tempTracks,
+          ind = 1,
           buildPlaylist = $.each(tracks, function(key, value) {
-              var trackNumber = value.id,
+              var trackNumber = ind,
                   trackName = value.name,
                   trackDuration = value.duration;
               if (trackNumber.toString().length === 1) {
@@ -82,18 +87,19 @@ jQuery(function ($) {
                       <span class="plLength">' + trackDuration + '</span> \
                   </div> \
               </li>');
+              ind++;
           }),
           trackCount = tracks.length,
           npAction = $('#npAction'),
           npTitle = $('#npTitle'),
           audio = $('#audio1').on('play', function () {
               playing = true;
-              npAction.text('Now Playing...');
+              npAction.text('Now Playing...🎵');
           }).on('pause', function () {
               playing = false;
-              npAction.text('Paused...');
+              npAction.text('Paused...🎵');
           }).on('ended', function () {
-              npAction.text('Paused...');
+              npAction.text('Paused...🎵');
               if ((index + 1) < trackCount) {
                   index++;
                   loadTrack(index);
@@ -165,9 +171,13 @@ jQuery(function ($) {
 
 </script>
 <script type="text/javascript">
-    // window.onload=function(){
-    //     document.getElementById("audio1").play();
-    // }
+
+    if(window.location.pathname == "/musicplayer"){
+        window.onload=function(){
+            document.getElementById("audio1").play();
+        }
+    }
+    
     $('.aaf').on('click', function(){
         $('.aaf').empty()
     })

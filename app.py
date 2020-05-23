@@ -1,8 +1,9 @@
 # Importing flask libs
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm 
 from wtforms import StringField, PasswordField, BooleanField
+from sqlalchemy.exc import IntegrityError
 from wtforms.validators import InputRequired, Email, Length
 from flask_sqlalchemy  import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -15,7 +16,7 @@ from emotion import get_emotion
 
 
 # instantiate the app
-app = Flask(__name__)
+app = Flask(__name__) 
 app.config['SECRET_KEY'] = 'Thisissupposedtobesecret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mom.db'
 bootstrap = Bootstrap(app)
@@ -291,7 +292,7 @@ def musicplayer():
     filename = 'img/{}.png'.format(mood)
     print(mood)
     trackTemp = []
-    tracks = Track.query.all()
+    tracks = Track.query.filter((Track.emotion == mood)).all()
     for track in tracks:
         trackTemp.append(track.asdict())
     return render_template('index.html', filename=filename, current_user=current_user, tracks=trackTemp)
@@ -307,22 +308,31 @@ def login():
                 login_user(user, remember=form.remember.data)
                 return redirect(url_for('index'))
 
-        return '<h1>Invalid username or password</h1>'
-        #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
+        flash('Invalid username or password', 'error')
     return render_template('login.html', form=form)  
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
+    if request.method == 'POST':
+        try:
+            if form.validate_on_submit():
+                hashed_password = generate_password_hash(form.password.data, method='sha256')
+                new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+                db.session.add(new_user)
+                db.session.commit()
 
-    if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data, method='sha256')
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
+                flash('you successfully registered...now plz login...', 'success');
+                return redirect(url_for('login'))
+            else:
+                print(type(form.errors))
+                error =""
+                for key, value in form.errors.items():
+                    error += key+": "+", ".join(value).lower()
+                flash(error, 'error')
 
-        return '<h1>New user has been created!</h1>'
-        #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+        except IntegrityError:
+            flash('username or email is already present...', 'info');
 
     return render_template('register.html', form=form)
 
@@ -335,8 +345,23 @@ def logout():
 
 @app.route('/predict')
 def predict():
-    label = get_emotion()    
+    label = get_emotion()
     return redirect('/musicplayer?mood='+label)
+
+
+@app.route('/aboutus')
+def about():
+    return "Hello";
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+
 
 if __name__== "__main__":
     app.run(debug=True)
