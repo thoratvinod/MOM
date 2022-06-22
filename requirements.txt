@@ -25,7 +25,7 @@ Mako==1.1.2
 Markdown==3.2.1
 MarkupSafe==1.0
 mkl-service==2.3.0
-numpy==1.18.1
+numpy==1.22.0
 ParallelDots==3.2.13
 Pillow==9.0.0
 protobuf==3.11.4
